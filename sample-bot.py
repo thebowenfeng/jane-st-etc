@@ -93,7 +93,7 @@ def main():
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
-                    if best_bond_ask <= 1000:
+                    if best_bond_ask is not None and best_bond_ask <= 1000:
                         print(f"BOND stock at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
                         exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=best_bond_ask, size=message['sell'][0][1])
                         print(f"Bought BOND at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
