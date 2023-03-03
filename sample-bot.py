@@ -87,23 +87,17 @@ def main():
                     return message[side][0][0]
 
             if message["symbol"] == "BOND":
-
-                bond_bid = best_price("buy")
-                bond_ask = best_price("sell")
+                best_bond_ask = best_price("sell")
 
                 now = time.time()
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
-                    print(message)
-                    '''
-                    print(
-                        {
-                            "vale_bid_price": bond_bid,
-                            "vale_ask_price": bond_ask,
-                        }
-                    )
-                    '''
+                    if best_bond_ask <= 1000:
+                        print(f"BOND stock at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
+                        exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=best_bond_ask, size=message['sell'][0][1])
+                        print(f"Bought BOND at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
+
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
