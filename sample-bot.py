@@ -95,12 +95,15 @@ def main():
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
+                    print(message)
+                    '''
                     print(
                         {
                             "vale_bid_price": bond_bid,
                             "vale_ask_price": bond_ask,
                         }
                     )
+                    '''
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
