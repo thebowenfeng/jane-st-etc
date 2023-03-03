@@ -42,12 +42,13 @@ def main():
     # Send an order for BOND at a good price, but it is low enough that it is
     # unlikely it will be traded against. Maybe there is a better price to
     # pick? Also, you will need to send more orders over time.
-    exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=990, size=1)
+    # exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=990, size=1)
 
     # Set up some variables to track the bid and ask price of a symbol. Right
     # now this doesn't track much information, but it's enough to get a sense
     # of the VALE market.
     vale_bid_price, vale_ask_price = None, None
+    bond_bid, bond_ask = None, None
     vale_last_print_time = time.time()
 
     # Here is the main loop of the program. It will continue to read and
@@ -81,14 +82,14 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
-            if message["symbol"] == "VALE":
+            def best_price(side):
+                if message[side]:
+                    return message[side][0][0]
 
-                def best_price(side):
-                    if message[side]:
-                        return message[side][0][0]
+            if message["symbol"] == "BOND":
 
-                vale_bid_price = best_price("buy")
-                vale_ask_price = best_price("sell")
+                bond_bid = best_price("buy")
+                bond_ask = best_price("sell")
 
                 now = time.time()
 
@@ -96,8 +97,8 @@ def main():
                     vale_last_print_time = now
                     print(
                         {
-                            "vale_bid_price": vale_bid_price,
-                            "vale_ask_price": vale_ask_price,
+                            "vale_bid_price": bond_bid,
+                            "vale_ask_price": bond_ask,
                         }
                     )
 
