@@ -115,11 +115,10 @@ def main():
                         print(f"Sold BOND at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
             elif message["symbol"] == "VALBZ":
                 last_valbz_ask = best_price('sell')
-                last_valbz_quantity = message['sell'][0][1]
-                print(message['sell'][0])
+                last_valbz_quantity = message['sell'][0][1] if 'sell' in message else None
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
-                last_vale_quantity = message['buy'][0][1]
+                last_vale_quantity = message['buy'][0][1] if 'buy' in message else None
 
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 profit = last_vale_buy * last_vale_quantity - last_valbz_ask * last_valbz_quantity
