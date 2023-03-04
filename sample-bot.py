@@ -259,6 +259,7 @@ def main():
                             curr_valbz_ask_quantity = last_valbz_ask_quantity
 
                         if vale_limit + last_vale_buy_quantity > 10:
+                            print(vale_orders)
                             for order_id in vale_orders:
                                 exchange.send_cancel_message(order_id=order_id)
                                 print(f"Cancel order {order_id}")
