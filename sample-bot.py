@@ -64,10 +64,11 @@ def main():
     # cause a feedback loop where your bot's messages will quickly be
     # rate-limited and ignored. Please, don't do that!
     order_id = 0
-    last_valbz_ask = None
-    last_valbz_quantity = 0
-    last_vale_buy = None
-    last_vale_quantity = 0
+    last_valbz_ask, last_valbz_buy = None, None
+    last_valbz_ask_quantity, last_valbz_buy_quantity = 0, 0
+    last_vale_buy, last_vale_ask = None, None
+    last_vale_buy_quantity, last_vale_ask_quantity = 0, 0
+    valbz_limit = 0
     while True:
         message = exchange.read_message()
 
@@ -115,22 +116,33 @@ def main():
                         print(f"Sold BOND at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
             elif message["symbol"] == "VALBZ":
                 last_valbz_ask = best_price('sell')
-                last_valbz_quantity = message['sell'][0][1] if message['sell'] else 0
+                last_valbz_ask_quantity = message['sell'][0][1] if message['sell'] else 0
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
-                last_vale_quantity = message['buy'][0][1] if message['buy'] else 0
+                last_vale_buy_quantity = message['buy'][0][1] if message['buy'] else 0
 
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
-                buy_amount = last_valbz_ask * last_valbz_quantity
-                sell_amount = last_vale_buy * last_vale_quantity
+                buy_amount = last_valbz_ask * last_valbz_ask_quantity
+                sell_amount = last_vale_buy * last_vale_buy_quantity
                 profit = sell_amount - buy_amount
-                if profit > 10 and buy_amount < 20000:
+                if buy_amount < 20000:
                     order_id += 1
                     print(f"VALBZ at {last_valbz_ask}, VALE at {last_vale_buy}.")
-                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_quantity)
+                    if valbz_limit + last_valbz_ask_quantity > 10:
+                        curr_valbz_ask_quantity = last_valbz_ask_quantity - (10 - valbz_limit)
+                        convert_vale_quantity = last_valbz_ask_quantity - curr_valbz_ask_quantity
+                        order_id += 1
+                        exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=convert_vale_quantity)
+                        order_id += 1
+                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=convert_vale_quantity)
+                        print(f"Converted {convert_vale_quantity} VALBZ to {convert_vale_quantity} VALE and sold")
+                    else:
+                        curr_valbz_ask_quantity = last_valbz_ask_quantity
+
+                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
                     order_id += 1
-                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_quantity)
-                    print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_quantity}. Sold VALE at {last_vale_buy} : {last_vale_quantity}")
+                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
+                    print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
 
 
 
