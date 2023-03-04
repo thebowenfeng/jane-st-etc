@@ -206,13 +206,23 @@ def main():
                 if valbz_limit + last_valbz_ask_quantity > 9:
                     transact = False
                     order_id += 1
-                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.SELL, price=last_valbz_buy, size=last_valbz_buy_quantity)
+
+                    if last_valbz_buy_quantity > 9:
+                        curr_valbz_sell = 9
+                    else:
+                        curr_valbz_sell = last_valbz_buy_quantity
+                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.SELL, price=last_valbz_buy, size=curr_valbz_sell)
                     valbz_limit -= last_valbz_buy_quantity
 
                 if vale_limit - last_vale_buy_quantity < -9:
                     transact = False
                     order_id += 1
-                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, price=last_vale_ask, size=last_vale_ask_quantity)
+
+                    if last_vale_ask_quantity > 9:
+                        curr_vale_buy = 9
+                    else:
+                        curr_vale_buy = last_vale_ask_quantity
+                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, price=last_vale_ask, size=curr_vale_buy)
                     vale_limit += last_vale_ask_quantity
 
                 if price_diff > 0 and transact and last_valbz_ask_quantity < 10 and last_vale_buy_quantity < 10:
