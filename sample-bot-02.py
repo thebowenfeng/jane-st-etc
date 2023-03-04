@@ -38,7 +38,7 @@ def main():
     buy_data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
     # access fair_value if exist by fair_values_appro["stock_name"]
-    fair_values_appro = {"BOND": None, "GS": None, "MS": None, "WFC": None, "ETF": None}
+    fair_values_appro = {"BOND": None, "GS": None, "MS": None, "WFC": None, "XFL": None}
 
     # Store and print the "hello" message received from the exchange. This
     # contains useful information about your positions. Normally you start with
@@ -101,8 +101,8 @@ def main():
 
     # if all values are valid, calculate etf
     # fair_values_appro = {"BOND": [], "GS": [], "MS": [], "WFC": [], "ETF": []}
-    if(fair_values_appro["BOND"] and fair_values_appro["GS"] and fair_values_appro["MS"] and fair_values_appro["WFC"]):
-        fair_values_appro["ETF"] = 0.3 * fair_values_appro["BOND"] + 0.2 * fair_values_appro["GS"] + 0.3 * fair_values_appro["MS"] + 0.2 * fair_values_appro["WFC"]
+    # if(fair_values_appro["BOND"] and fair_values_appro["GS"] and fair_values_appro["MS"] and fair_values_appro["WFC"]):
+    #     fair_values_appro["ETF"] = 0.3 * fair_values_appro["BOND"] + 0.2 * fair_values_appro["GS"] + 0.3 * fair_values_appro["MS"] + 0.2 * fair_values_appro["WFC"]
 
     while True:
         message = exchange.read_message()
