@@ -209,26 +209,33 @@ def main():
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
             '''
-            if message["symbol"] == "GS":
-                last_gsc_buy = best_price('buy')
-                last_gsc_buy_quantity = message['buy'][0][1] if message['buy'] else 0
-                last_gsc_ask = best_price('sell')
-                last_gsc_ask_quantity = message['busy'][0][1] if message['sell'] else 0
-            elif message["symbol"] == "MS":
-                last_ms_buy = best_price("buy")
-                last_ms_quantity = message['buy'][0][1] if message['buy'] else 0
-                last_ms_ask = best_price('sell')
-                last_ms_ask_quantity = message['busy'][0][1] if message['sell'] else 0   
-            elif message["symbol"] == "WFC":   
-                last_wfc_buy = best_price("buy")
-                last_wfc_quantity = message['buy'][0][1] if message['buy'] else 0
-                last_wfc_ask = best_price('sell')
-                last_wfc_ask_quantity = message['busy'][0][1] if message['sell'] else 0  
-            elif message["symbol"] == "XLF":
+            # if message["symbol"] == "GS":
+            #     last_gsc_buy = best_price('buy')
+            #     last_gsc_buy_quantity = message['buy'][0][1] if message['buy'][0][1] else 0
+            #     last_gsc_ask = best_price('sell')
+            #     last_gsc_ask_quantity = message["sell"][0][1] if message["sell"][0][1] else 0
+            # elif message["symbol"] == "MS":
+            #     last_ms_buy = best_price("buy")
+            #     last_ms_quantity = message['buy'][0][1] if message['buy'][0][1] else 0
+            #     last_ms_ask = best_price('sell')
+            #     last_ms_ask_quantity = message["sell"][0][1] if message["sell"][0][1] else 0
+            # elif message["symbol"] == "WFC":   
+            #     last_wfc_buy = best_price("buy")
+            #     last_wfc_quantity = message['buy'][0][1] if message['buy'][0][1] else 0
+            #     last_wfc_ask = best_price('sell')
+            #     last_wfc_ask_quantity =message["sell"][0][1] if message["sell"][0][1] else 0
+            if message["symbol"] == "XLF":
                 last_xlf_buy = best_price("buy")
-                last_xlf_quantity = message["buy"][0][1] if message["buy"] else 0
+                if len(message["buy"]) > 1:
+                    last_xlf_ask_quantity = message["buy"][0][1]
+                else:
+                    last_xlf_ask_quantity = 0
+
                 last_xlf_ask = best_price("sell")
-                last_xlf_ask_quantity = message["busy"][0][1] if message["sell"] else 0
+                if len(message["sell"]) > 1:
+                    last_xlf_ask_quantity = message["sell"][0][1]
+                else:
+                    last_xlf_ask_quantity = 0
             
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
