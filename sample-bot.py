@@ -26,7 +26,6 @@ team_name = "TENTHOUSANDPERCENTLOSS"
 # code is intended to be a working example, but it needs some improvement
 # before it will start making good trades!
 
-
 def main():
     args = parse_arguments()
 
@@ -63,6 +62,7 @@ def main():
     # message. Sending a message in response to every exchange message will
     # cause a feedback loop where your bot's messages will quickly be
     # rate-limited and ignored. Please, don't do that!
+    order_id = 0
     while True:
         message = exchange.read_message()
 
@@ -88,15 +88,25 @@ def main():
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
+                best_bond_buy = best_price('buy')
 
                 now = time.time()
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
-                    if best_bond_ask is not None and best_bond_ask <= 1000:
+                    if best_bond_ask is not None and best_bond_ask < 1000:
+                        order_id += 1
                         print(f"BOND stock at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
-                        exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=best_bond_ask, size=message['sell'][0][1])
+                        exchange.send_add_message(order_id=order_id, symbol="BOND", dir=Dir.BUY, price=best_bond_ask, size=message['sell'][0][1])
                         print(f"Bought BOND at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
+
+                    if best_bond_buy is not None and best_bond_buy >= 1000:
+                        order_id += 1
+                        print(f"Selling BOND stock at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
+                        exchange.send_add_message(order_id=order_id, symbol="BOND", dir=Dir.SELL, price=best_bond_buy,
+                                                  size=message['buy'][0][1])
+                        print(f"Sold BOND at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
+
 
 
 
