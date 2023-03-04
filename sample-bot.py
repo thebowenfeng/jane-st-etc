@@ -288,8 +288,23 @@ def main():
                             exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, size=last_valbz_ask_quantity, price=last_valbz_ask)
                             order_id += 1
                             exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=last_valbz_ask_quantity)
-                            order_id += 1
-                            exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
+
+                            if vale_limit + last_vale_buy_quantity > 10:
+                                print(vale_orders)
+                                for order_id in vale_orders:
+                                    exchange.send_cancel_message(order_id=order_id)
+                                    print(f"Cancel order {order_id}")
+
+                                vale_orders = []
+                                # order_id += 1
+                                # exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=10)
+                                # vale_orders.append(order_id)
+                                # vale_limit = 10
+                                print(f"Resold VALE orders")
+                            else:
+                                order_id += 1
+                                exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
+
                             vale_limit += last_valbz_ask_quantity
                             vale_orders.append(order_id)
                             print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
