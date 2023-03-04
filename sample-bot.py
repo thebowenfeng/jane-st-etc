@@ -36,6 +36,9 @@ def main():
     data = {"GS" : [], "GS": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
     buy_data = {"GS": [], "GS": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
+    # Stored previous successful orders, structured as [price, ] --------------------------------------------------------------------
+    orders = {"BOND": [], "GS": [], "MS": [], "WFC": []}
+
     # Store and print the "hello" message received from the exchange. This
     # contains useful information about your positions. Normally you start with
     # all positions at zero, but if you reconnect during a round, you might
@@ -96,6 +99,21 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
+
+
+            def fair_value(stock_name):
+                if (message["type"] == "book" and message["symbol"] == stock_name):
+                   return (message["sell"][0][0] - message["buy"][0][0]) / 2
+
+            # Get the fair value for each individual component and etf
+            BOND_fair_val = fair_value("BOND")
+            GS_fair_val = fair_value("GS")
+            MS_fair_val = fair_value("MS")
+            WFC_fair_val = fair_value("WFC")
+            ETF_fair_val = 0.3 * BOND_fair_val + 0.2 * GS_fair_val + 0.3 * MS_fair_val + 0.2 * WFC_fair_val
+
+
+
 
             def best_price(side):
                     if message[side]:
