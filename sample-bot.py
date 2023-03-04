@@ -33,8 +33,8 @@ def main():
     exchange = ExchangeConnection(args=args)
 
     # Data will be structured as [bid, ask, spread, fee]
-    data = {"GS" : [], "GS": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
-    buy_data = {"GS": [], "GS": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
+    data = {"GS" : [], "VALBZ": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
+    buy_data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
     # Stored previous successful orders, structured as [price, ] --------------------------------------------------------------------
     orders = {"BOND": [], "GS": [], "MS": [], "WFC": []}
@@ -46,12 +46,13 @@ def main():
     hello_message = exchange.read_message()
     print("First message from exchange:", hello_message)
 
+
+
     # Send an order for GS at a good price, but it is low enough that it is
     # unlikely it will be traded against. Maybe there is a better price to
     # pick? Also, you will need to send more orders over time.
 
     # exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=990, size=1)
-
 
     # Set up some variables to track the bid and ask price of a symbol. Right
     # now this doesn't track much information, but it's enough to get a sense
@@ -59,7 +60,8 @@ def main():
 
     vale_bid_price, vale_ask_price = None, None
     bond_bid, bond_ask = None, None
-
+    first_gs = True
+    
     vale_last_print_time = time.time()
 
     # Here is the main loop of the program. It will continue to read and
@@ -80,9 +82,11 @@ def main():
     last_vale_buy, last_vale_ask = None, None
     last_vale_buy_quantity, last_vale_ask_quantity = 0, 0
     valbz_limit = 0
+    vale_limit = 0
+    vale_orders = []
     while True:
         message = exchange.read_message()
-
+        
         # Some of the message types below happen infrequently and contain
         # important information to help you understand what your bot is doing,
         # so they are printed in full. We recommend not always printing every
@@ -114,11 +118,10 @@ def main():
 
 
 
-
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
-            
+            '''
             def add_data():
                 bid_price = best_price("buy")
                 ask_price = best_price("sell")
@@ -131,7 +134,7 @@ def main():
                 else:
                     fee = 0
                 data[message["symbol"]].append([bid_price, ask_price, spread, fee])
-            '''
+
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
@@ -146,52 +149,50 @@ def main():
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
-            
+
             if message["symbol"] == "GS":
                 GS_ask = best_price("sell")
                 GS_buy = best_price('buy')
-                first_purchase = True
                 
                 now = time.time()
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
-                    if first_purchase:
-                        if GS_ask is not None:
+                    if first_gs:
+                        if GS_ask is not None and GS_ask < buy_data["GS"][0]:
+                            GS_ask = best_price("sell")
+                            GS_buy = best_price('buy')
                             order_id += 1
                             print(f"GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
                             exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price= GS_ask, size=message['sell'][0][1])
                             print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
                             buy_data["GS"] = [GS_ask, message['sell'][0][1]]
-                            first_purchase = False
-                    else:
-                        if GS_ask is not None and GS_ask < buy_data["GS"][0]:
-                            order_id += 1
-                            print(f"GS stock at {GS_ask}. Quantity: {message['sell'][0][1]}")
-                            if message['sell'][0][1] + buy_data["GS"][1] > 100:
-                                exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
-                            else:
-                                exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
-                            print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
-                            buy_data["GS"][1] = buy_data["GS"] + message['sell'][0][1]
+                            first_gs = False
+                    if GS_ask is not None and GS_ask < buy_data["GS"][0]:
+                        order_id += 1
+                        print(f"GS stock at {GS_ask}. Quantity: {message['sell'][0][1]}")
+                        if message['sell'][0][1] + buy_data["GS"][1] > 100:
+                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
+                        else:
+                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
+                        print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
+                        buy_data["GS"][1] = buy_data["GS"] + message['sell'][0][1]
 
-                        if GS_buy is not None and GS_buy >= buy_data["GS"][0]:
-                            order_id += 1
-                            print(f"Selling GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.SELL, price=GS_buy,
-                                                    size=message['buy'][0][1])
-                            print(f"Sold GS at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                            buy_data["GS"][1] = buy_data["GS"] - message['sell'][0][1]
+                    if GS_buy is not None and GS_buy >= buy_data["GS"][0]:
+                        order_id += 1
+                        print(f"Selling GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
+                        exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.SELL, price=GS_buy,
+                                                size=message['buy'][0][1])
+                        print(f"Sold GS at {GS_buy}. Quantity: {message['buy'][0][1]}")
+                        buy_data["GS"][1] = buy_data["GS"] - message['sell'][0][1]
             
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
             '''
-
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
                 best_bond_buy = best_price('buy')
-
 
                 now = time.time()
 
@@ -216,7 +217,7 @@ def main():
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
                 last_vale_buy_quantity = message['buy'][0][1] if message['buy'] else 0
-            '''
+
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
@@ -228,8 +229,8 @@ def main():
                     if profit > convert_profit:
                         order_id += 1
                         if valbz_limit + last_valbz_ask_quantity > 10:
-                            curr_valbz_ask_quantity = last_valbz_ask_quantity - (10 - valbz_limit)
-                            convert_vale_quantity = last_valbz_ask_quantity - curr_valbz_ask_quantity
+                            convert_vale_quantity = valbz_limit + last_valbz_ask_quantity - 10
+                            curr_valbz_ask_quantity = 10 - valbz_limit
                             order_id += 1
                             exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=convert_vale_quantity)
                             order_id += 1
@@ -240,18 +241,32 @@ def main():
 
                         exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
                         valbz_limit += curr_valbz_ask_quantity
-                        order_id += 1
-                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
-                        print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
+                        print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. ")
+
+                        if vale_limit + last_vale_buy_quantity > 10:
+                            for order_id in vale_orders:
+                                exchange.send_cancel_message(order_id=order_id)
+                                vale_orders = []
+                            order_id += 1
+                            exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=10)
+                            vale_orders.append(order_id)
+                            vale_limit = 10
+                            print(f"Resold all VALE")
+                        else:
+                            curr_vale_buy_quantity = last_vale_buy_quantity
+                            order_id += 1
+                            exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=curr_vale_buy_quantity)
+                            vale_limit += last_vale_buy_quantity
+                            vale_orders.append(order_id)
+                            print(f"Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
                     else:
                         order_id += 1
-                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_ask_quantity)
+                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, size=last_valbz_ask_quantity, price=last_valbz_ask)
                         order_id += 1
                         exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=last_valbz_ask_quantity)
                         order_id += 1
                         exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
                         print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-                    '''
 
                 
 
