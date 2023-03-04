@@ -129,7 +129,7 @@ def main():
 
         elif message["type"] == "book":
             # fair price approximation
-            if(message["sell"][0][0] and message["buy"][0][0]):
+            if(message["sell"][0] and message["buy"][0]):
                 fair_values_appro[message["symbol"]] = (message["sell"][0][0] + message["buy"][0][0]) / 2
 
 
