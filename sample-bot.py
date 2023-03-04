@@ -256,8 +256,8 @@ def main():
                             vale_orders.append(order_id)
                             print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
 
-        with open("data.txt", "a") as file:
-            file.write(str(data) + "\n")
+        # with open("data.txt", "a") as file:
+            # file.write(str(data) + "\n")
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
