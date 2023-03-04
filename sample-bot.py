@@ -261,6 +261,7 @@ def main():
                         if vale_limit + last_vale_buy_quantity > 10:
                             for order_id in vale_orders:
                                 exchange.send_cancel_message(order_id=order_id)
+                                print(f"Cancel order {order_id}")
                                 vale_orders = []
                             order_id += 1
                             exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=10)
