@@ -37,8 +37,8 @@ def main():
     data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
     buy_data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
-    # Stored previous successful orders, structured as [price, ] --------------------------------------------------------------------
-    orders = {"BOND": [], "GS": [], "MS": [], "WFC": []}
+    # access fair_value if exist by fair_values_appro["stock_name"]
+    fair_values_appro = {"BOND": [], "GS": [], "MS": [], "WFC": [], "ETF": []}
 
     # Store and print the "hello" message received from the exchange. This
     # contains useful information about your positions. Normally you start with
@@ -83,6 +83,27 @@ def main():
     valbz_limit = 0
     vale_limit = 0
     vale_orders = []
+
+
+
+    # def fair_value(stock_name):
+    #     if (message["type"] == "book" and message["symbol"] == stock_name):
+    #         return (message["sell"][0][0] + message["buy"][0][0]) / 2
+
+    # Get the fair value for each individual component and etf
+    # BOND_fair_val = fair_value("BOND")
+    # GS_fair_val = fair_value("GS")
+    # MS_fair_val = fair_value("MS")
+    # WFC_fair_val = fair_value("WFC")
+    #
+    # ETF_fair_val = 0.3 * BOND_fair_val + 0.2 * GS_fair_val + 0.3 * MS_fair_val + 0.2 * WFC_fair_val
+    # print(ETF_fair_val)
+
+    # if all values are valid, calculate etf
+    # fair_values_appro = {"BOND": [], "GS": [], "MS": [], "WFC": [], "ETF": []}
+    if(fair_values_appro["BOND"] and fair_values_appro["GS"] and fair_values_appro["MS"] and fair_values_appro["WFC"]):
+        fair_values_appro["ETF"] = 0.3 * fair_values_appro["BOND"] + 0.2 * fair_values_appro["GS"] + 0.3 * fair_values_appro["MS"] + 0.2 * fair_values_appro["WFC"]
+
     while True:
         message = exchange.read_message()
 
@@ -101,35 +122,16 @@ def main():
             print(message)
         elif message["type"] == "fill":
             print(message)
+        elif message["type"] == "trade":
+            # fair price approximation
+            if(not fair_values_appro[message["symbol"]]):
+                fair_values_appro[message["symbol"]] = message["price"]
+
         elif message["type"] == "book":
+            # fair price approximation
+            if(message["sell"][0][0] and message["buy"][0][0]):
+                fair_values_appro[message["symbol"]] = (message["sell"][0][0] + message["buy"][0][0]) / 2
 
-            def fair_value(stock_name):
-                if (message["type"] == "book" and message["symbol"] == stock_name):
-                    return (message["sell"][0][0] + message["buy"][0][0]) / 2
-
-            # Get the fair value for each individual component and etf
-            BOND_fair_val = fair_value("BOND")
-            GS_fair_val = fair_value("GS")
-            MS_fair_val = fair_value("MS")
-            WFC_fair_val = fair_value("WFC")
-            ETF_fair_val = 0.3 * BOND_fair_val + 0.2 * GS_fair_val + 0.3 * MS_fair_val + 0.2 * WFC_fair_val
-            print(ETF_fair_val)
-
-            '''
-
-                # ------------------------------------------
-                # df previous 50 orders
-                # grab all the available records
-            def moving_average(side, stock_name):
-                time_period = 50
-                sum = 0
-                counter = 0
-                if (message["type"] == "trade" and message["symbol"] == stock_name):
-                    sum += message["price"]
-                    counter += 1
-                    if (counter == time_period):
-                        return sum/time_period
-            '''
 
             def best_price(side):
                 if message[side]:
