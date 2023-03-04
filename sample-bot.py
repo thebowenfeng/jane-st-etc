@@ -81,15 +81,15 @@ def main():
     valbz_limit = 0
     vale_limit = 0
 
-    last_valbz_ask = None
-    last_valbz_ask_quantity = None
-    last_vale_buy = None
-    last_vale_buy_quantity = None
+    last_valbz_ask = 0
+    last_valbz_ask_quantity = 0
+    last_vale_buy = 0
+    last_vale_buy_quantity = 0
 
-    last_valbz_buy = None
-    last_valbz_buy_quantity = None
-    last_vale_ask = None
-    last_vale_ask_quantity = None
+    last_valbz_buy = 0
+    last_valbz_buy_quantity = 0
+    last_vale_ask = 0
+    last_vale_ask_quantity = 0
 
     valbz_spent = 0
     vale_sold = 0
