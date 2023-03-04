@@ -215,7 +215,7 @@ def main():
                     exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, price=last_vale_ask, size=last_vale_ask_quantity)
                     vale_limit += last_vale_ask_quantity
 
-                if price_diff > 0 and transact:
+                if price_diff > 0 and transact and last_valbz_ask_quantity < 10 and last_vale_buy_quantity < 10:
                     order_id += 1
                     exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_ask_quantity)
                     valbz_limit += last_valbz_ask_quantity
