@@ -84,6 +84,9 @@ def main():
     vale_limit = 0
     vale_orders = []
 
+    xfl_limit = 0
+    last_xfl_ask, last_xfl_buy = None, None
+    last_purchased_xlf_value = 0
 
 
     # def fair_value(stock_name):
@@ -206,6 +209,27 @@ def main():
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
             '''
+            if message["symbol"] == "GS":
+                last_gsc_buy = best_price('buy')
+                last_gsc_buy_quantity = message['buy'][0][1] if message['buy'] else 0
+                last_gsc_ask = best_price('sell')
+                last_gsc_ask_quantity = message['busy'][0][1] if message['sell'] else 0
+            elif message["symbol"] == "MS":
+                last_ms_buy = best_price("buy")
+                last_ms_quantity = message['buy'][0][1] if message['buy'] else 0
+                last_ms_ask = best_price('sell')
+                last_ms_ask_quantity = message['busy'][0][1] if message['sell'] else 0   
+            elif message["symbol"] == "WFC":   
+                last_wfc_buy = best_price("buy")
+                last_wfc_quantity = message['buy'][0][1] if message['buy'] else 0
+                last_wfc_ask = best_price('sell')
+                last_wfc_ask_quantity = message['busy'][0][1] if message['sell'] else 0  
+            elif message["symbol"] == "XLF":
+                last_xlf_buy = best_price("buy")
+                last_xlf_quantity = message["buy"][0][1] if message["buy"] else 0
+                last_xlf_ask = best_price("sell")
+                last_xlf_ask_quantity = message["busy"][0][1] if message["sell"] else 0
+            
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
                 best_bond_buy = best_price('buy')
@@ -298,7 +322,21 @@ def main():
                             vale_orders.append(order_id)
                             print(
                                 f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-
+            
+            if fair_values_appro["XFL"] is not None and last_xlf_ask is not None and fair_values_appro["XFL"] < last_xlf_ask and xfl_limit < 100:
+                order_id += 1
+                print(f"XFL stock at {last_xlf_ask}. Quantity: {message['sell'][0][1]}")
+                exchange.send_add_message(order_id = order_id, symbol = "XFL",  dir=Dir.BUY, price = last_xlf_ask,
+                                          size = message['sell'][0][1])
+                xfl_limit += message["sell"][0][1]
+                print(f"Bought XFL at {last_xlf_ask}. Quantity: {message['sell'][0][1]}")
+            if fair_values_appro["XFL"] is not None and last_xlf_buy is not None and last_xlf_buy >= fair_values_appro["XFL"] and xfl_limit < -100:
+                order_id += 1
+                print(f"Selling XFL stock at {last_xlf_buy}. Quantity: {message['buy'][0][1]}")
+                exchange.send_add_message(order_id = order_id, symbol = "XFL", dir= Dir.SELL, price = last_xlf_buy,
+                                          size = message['buy'][0][1])
+                xfl_limit -= message["buy"][0][1]
+                print(f"Sold XFL at {last_xlf_buy}")
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
 
