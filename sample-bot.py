@@ -51,6 +51,7 @@ def main():
 
     # exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=990, size=1)
 
+    ''''
     GS_ask = best_price("sell")
     GS_buy = best_price('buy')
     order_id += 1
@@ -58,7 +59,7 @@ def main():
     exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price= GS_ask, size=message['sell'][0][1])
     print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
     buy_data["GS"] = [GS_ask, message['sell'][0][1]]
-
+    '''
     # Set up some variables to track the bid and ask price of a symbol. Right
     # now this doesn't track much information, but it's enough to get a sense
     # of the VALE market.
@@ -172,7 +173,6 @@ def main():
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
                 best_bond_buy = best_price('buy')
-
 
                 now = time.time()
 
