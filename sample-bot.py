@@ -113,7 +113,7 @@ def main():
                 else:
                     fee = 0
                 data[message["symbol"]].append([bid_price, ask_price, spread, fee])
-
+            '''
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
@@ -128,7 +128,7 @@ def main():
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
-            '''
+            
             if message["symbol"] == "GS":
                 GS_ask = best_price("sell")
                 GS_buy = best_price('buy')
@@ -164,11 +164,11 @@ def main():
                                                     size=message['buy'][0][1])
                             print(f"Sold GS at {GS_buy}. Quantity: {message['buy'][0][1]}")
                             buy_data["GS"][1] = buy_data["GS"] - message['sell'][0][1]
-            '''
+            
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
-
+            '''
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
@@ -233,7 +233,6 @@ def main():
                         order_id += 1
                         exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
                         print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-<<<<<<< HEAD
                     '''
 
                 
