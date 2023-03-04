@@ -103,10 +103,10 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
-            '''
+
             def fair_value(stock_name):
                 if (message["type"] == "book" and message["symbol"] == stock_name):
-                   return (message["sell"][0][0] + message["buy"][0][0]) / 2
+                   return float(message["sell"][0][0] + message["buy"][0][0]) / 2.0
 
             # Get the fair value for each individual component and etf
             BOND_fair_val = fair_value("BOND")
@@ -114,10 +114,8 @@ def main():
             MS_fair_val = fair_value("MS")
             WFC_fair_val = fair_value("WFC")
             ETF_fair_val = 0.3 * BOND_fair_val + 0.2 * GS_fair_val + 0.3 * MS_fair_val + 0.2 * WFC_fair_val
-            print(ETF_fair_val)
-            '''
-            '''
 
+            '''
                 # ------------------------------------------
                 # df previous 50 orders
                 # grab all the available records
@@ -139,7 +137,7 @@ def main():
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
-            '''
+            
             def add_data():
                 bid_price = best_price("buy")
                 ask_price = best_price("sell")
@@ -168,46 +166,6 @@ def main():
             ### TESTING TO REMOVE
             print(data["GS"])
 
-            if message["symbol"] == "GS":
-                GS_ask = best_price("sell")
-                GS_buy = best_price('buy')
-                
-                now = time.time()
-
-                if now > vale_last_print_time + 1:
-                    vale_last_print_time = now
-                    if first_gs:
-                        if GS_ask is not None and GS_ask < buy_data["GS"][0]:
-                            GS_ask = best_price("sell")
-                            GS_buy = best_price('buy')
-                            order_id += 1
-                            print(f"GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price= GS_ask, size=message['sell'][0][1])
-                            print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
-                            buy_data["GS"] = [GS_ask, message['sell'][0][1]]
-                            first_gs = False
-                    if GS_ask is not None and GS_ask < buy_data["GS"][0]:
-                        order_id += 1
-                        print(f"GS stock at {GS_ask}. Quantity: {message['sell'][0][1]}")
-                        if message['sell'][0][1] + buy_data["GS"][1] > 100:
-                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
-                        else:
-                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
-                        print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
-                        buy_data["GS"][1] = buy_data["GS"] + message['sell'][0][1]
-
-                    if GS_buy is not None and GS_buy >= buy_data["GS"][0]:
-                        order_id += 1
-                        print(f"Selling GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                        exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.SELL, price=GS_buy,
-                                                size=message['buy'][0][1])
-                        print(f"Sold GS at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                        buy_data["GS"][1] = buy_data["GS"] - message['sell'][0][1]
-            
-            if message["symbol"] == "VALE":
-                vale_bid_price = best_price("buy")
-                GS_ask_price = best_price("sell")
-            '''
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
                 best_bond_buy = best_price('buy')
