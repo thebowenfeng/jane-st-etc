@@ -133,11 +133,14 @@ def main():
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
-            '''
+            
             def add_data():
                 bid_price = best_price("buy")
                 ask_price = best_price("sell")
-                spread = bid_price - ask_price
+                if bid_price == None or ask_price == None:
+                    spread = -1
+                else:
+                    spread = bid_price - ask_price
 
                 if message["symbol"] == "VALE":
                     fee = 10
@@ -155,9 +158,6 @@ def main():
                 fee = 100
             else:
                 fee = 0
-
-            add_data()
-            '''
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
