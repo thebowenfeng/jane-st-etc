@@ -33,8 +33,8 @@ def main():
     exchange = ExchangeConnection(args=args)
 
     # Data will be structured as [bid, ask, spread, fee]
-    data = {"GS" : [], "GS": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
-    buy_data = {"GS": [], "GS": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
+    data = {"GS" : [], "VALBZ": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
+    buy_data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
     # Store and print the "hello" message received from the exchange. This
     # contains useful information about your positions. Normally you start with
@@ -56,7 +56,6 @@ def main():
 
     vale_bid_price, vale_ask_price = None, None
     bond_bid, bond_ask = None, None
-    first_purchase = True
 
     vale_last_print_time = time.time()
 
@@ -114,7 +113,7 @@ def main():
                 else:
                     fee = 0
                 data[message["symbol"]].append([bid_price, ask_price, spread, fee])
-            '''
+
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
@@ -129,17 +128,17 @@ def main():
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
-            
+
             if message["symbol"] == "GS":
                 GS_ask = best_price("sell")
                 GS_buy = best_price('buy')
+                first_purchase = True
                 
                 now = time.time()
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
                     if first_purchase:
-                        print("REACHED\n\n\n")
                         if GS_ask is not None:
                             order_id += 1
                             print(f"GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
@@ -152,29 +151,24 @@ def main():
                             order_id += 1
                             print(f"GS stock at {GS_ask}. Quantity: {message['sell'][0][1]}")
                             if message['sell'][0][1] + buy_data["GS"][1] > 100:
-                                exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, 
-                                                          size= abs(100 - buy_data["GS"][1]))
+                                exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
                             else:
                                 exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price=GS_ask, size=message['sell'][0][1])
                             print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
-                            buy_data["GS"][1] = buy_data["GS"][1] + message['sell'][0][1]
+                            buy_data["GS"][1] = buy_data["GS"] + message['sell'][0][1]
 
                         if GS_buy is not None and GS_buy >= buy_data["GS"][0]:
                             order_id += 1
                             print(f"Selling GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                            if buy_data["GS"][1] - message['buy'][0][1] < -100:
-                                exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.SELL, price=GS_buy,
-                                                        size=abs(-100 - buy_data["GS"][1]))
-                            else: 
-                                exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.SELL, price=GS_buy,
-                                                        size=message['buy'][0][1])
+                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.SELL, price=GS_buy,
+                                                    size=message['buy'][0][1])
                             print(f"Sold GS at {GS_buy}. Quantity: {message['buy'][0][1]}")
-                            buy_data["GS"][1] = buy_data["GS"][1] - message['sell'][0][1]
+                            buy_data["GS"][1] = buy_data["GS"] - message['sell'][0][1]
             
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
-            '''
+
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
@@ -204,7 +198,7 @@ def main():
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
                 last_vale_buy_quantity = message['buy'][0][1] if message['buy'] else 0
-            '''
+
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
@@ -233,13 +227,14 @@ def main():
                         print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
                     else:
                         order_id += 1
-                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_ask_quantity)
+                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, size=last_valbz_ask_quantity)
                         order_id += 1
                         exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=last_valbz_ask_quantity)
                         order_id += 1
                         exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
                         print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-                    '''
+
+    
 
                 
 
