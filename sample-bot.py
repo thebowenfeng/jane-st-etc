@@ -61,7 +61,7 @@ def main():
     vale_bid_price, vale_ask_price = None, None
     bond_bid, bond_ask = None, None
     first_gs = True
-    
+
     vale_last_print_time = time.time()
 
     # Here is the main loop of the program. It will continue to read and
