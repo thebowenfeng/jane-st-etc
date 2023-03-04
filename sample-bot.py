@@ -13,7 +13,7 @@ import json
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # Replace "REPLACEME" with your team name!
-team_name = "REPLACEME"
+team_name = "TENTHOUSANDPERCENTLOSS"
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
@@ -31,6 +31,8 @@ def main():
     args = parse_arguments()
 
     exchange = ExchangeConnection(args=args)
+
+    data = {"BOND" : [], "VALBZ": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
 
     # Store and print the "hello" message received from the exchange. This
     # contains useful information about your positions. Normally you start with
@@ -81,11 +83,21 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
-            if message["symbol"] == "VALE":
-
-                def best_price(side):
+            def best_price(side):
                     if message[side]:
                         return message[side][0][0]
+
+            if message["symbol"] == "BOND":
+                bond_bid_price = best_price("buy")
+                bond_ask_price = best_price("sell")
+                bond_spread = bond_bid_price - bond_ask_price
+                fee = 0
+                time_data = [bond_bid_price, bond_ask_price, bond_spread, fee]
+                data["BOND"].append(time_data)
+
+            if message["symbol"] == "VALE":
+
+                
 
                 vale_bid_price = best_price("buy")
                 vale_ask_price = best_price("sell")
@@ -100,6 +112,9 @@ def main():
                             "vale_ask_price": vale_ask_price,
                         }
                     )
+            if message["symbol"] == "VALBZ":
+
+                
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
