@@ -33,8 +33,8 @@ def main():
     exchange = ExchangeConnection(args=args)
 
     # Data will be structured as [bid, ask, spread, fee]
-    data = {"GS" : [], "VALBZ": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
-    buy_data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
+    data = {"BOND" : [], "VALBZ": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
+    buy_data = {"BOND": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
     # Stored previous successful orders, structured as [price, ] --------------------------------------------------------------------
     orders = {"BOND": [], "GS": [], "MS": [], "WFC": []}
