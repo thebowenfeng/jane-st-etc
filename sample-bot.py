@@ -26,6 +26,7 @@ team_name = "TENTHOUSANDPERCENTLOSS"
 # code is intended to be a working example, but it needs some improvement
 # before it will start making good trades!
 
+
 def main():
     args = parse_arguments()
 
@@ -63,6 +64,8 @@ def main():
     # cause a feedback loop where your bot's messages will quickly be
     # rate-limited and ignored. Please, don't do that!
     order_id = 0
+    last_valbz_ask = None
+    last_vale_buy = None
     while True:
         message = exchange.read_message()
 
@@ -82,6 +85,8 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
+            # Sell VALBZ buy VALE
+
             def best_price(side):
                 if message[side]:
                     return message[side][0][0]
