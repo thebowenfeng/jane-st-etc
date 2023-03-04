@@ -91,6 +91,9 @@ def main():
     last_vale_ask = None
     last_vale_ask_quantity = None
 
+    valbz_spent = 0
+    vale_sold = 0
+
     while True:
         message = exchange.read_message()
         
@@ -211,8 +214,11 @@ def main():
                         curr_valbz_sell = 9
                     else:
                         curr_valbz_sell = last_valbz_buy_quantity
-                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.SELL, price=last_valbz_buy, size=curr_valbz_sell)
-                    valbz_limit -= last_valbz_buy_quantity
+
+                    if last_valbz_buy * curr_valbz_sell > valbz_spent + 10:
+                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.SELL, price=last_valbz_buy, size=curr_valbz_sell)
+                        valbz_limit -= last_valbz_buy_quantity
+                        valbz_spent = 0
 
                 if vale_limit - last_vale_buy_quantity < -9:
                     transact = False
@@ -222,16 +228,22 @@ def main():
                         curr_vale_buy = 9
                     else:
                         curr_vale_buy = last_vale_ask_quantity
-                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, price=last_vale_ask, size=curr_vale_buy)
-                    vale_limit += last_vale_ask_quantity
+
+                    if vale_sold > last_vale_ask * curr_vale_buy + 10:
+                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, price=last_vale_ask, size=curr_vale_buy)
+                        vale_limit += last_vale_ask_quantity
+                        vale_sold = 0
 
                 if price_diff > 0 and transact and last_valbz_ask_quantity < 10 and last_vale_buy_quantity < 10:
                     order_id += 1
                     exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_ask_quantity)
                     valbz_limit += last_valbz_ask_quantity
+                    valbz_spent += last_valbz_ask * last_valbz_ask_quantity
                     order_id += 1
                     exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
                     vale_limit -= last_vale_buy_quantity
+                    vale_sold += last_vale_buy * last_vale_buy_quantity
+
                     print(f"Bought VALBZ at {last_valbz_ask} for {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} for {last_vale_buy_quantity}")
 
 
