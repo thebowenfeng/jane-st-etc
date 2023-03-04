@@ -65,7 +65,9 @@ def main():
     # rate-limited and ignored. Please, don't do that!
     order_id = 0
     last_valbz_ask = None
+    last_valbz_quantity = 0
     last_vale_buy = None
+    last_vale_quantity = 0
     while True:
         message = exchange.read_message()
 
@@ -111,6 +113,20 @@ def main():
                         exchange.send_add_message(order_id=order_id, symbol="BOND", dir=Dir.SELL, price=best_bond_buy,
                                                   size=message['buy'][0][1])
                         print(f"Sold BOND at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
+            elif message["symbol"] == "VALBZ":
+                last_valbz_ask = best_price('sell')
+                last_valbz_quantity = message['sell'][0][1]
+            elif message["symbol"] == "VALE":
+                last_vale_buy = best_price('buy')
+                last_vale_quantity = message['buy'][0][1]
+
+            if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
+                order_id += 1
+                print(f"VALBZ at {last_valbz_ask}, VALE at {last_vale_buy}.")
+                exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_quantity)
+                order_id += 1
+                exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_quantity)
+                print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_quantity}. Sold VALE at {last_vale_buy} : {last_vale_quantity}")
 
 
 
