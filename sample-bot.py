@@ -106,6 +106,17 @@ def main():
             print(data["BOND"])
 
             if message["symbol"] == "VALE":
+                fee = 10
+            if message["symbol"] == "XLF":
+                fee = 100
+            else:
+                fee = 0
+
+            add_data()
+            ### TESTING TO REMOVE
+            print(data["BOND"])
+
+            if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 vale_ask_price = best_price("sell")
 
