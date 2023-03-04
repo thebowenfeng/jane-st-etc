@@ -94,6 +94,8 @@ def main():
     valbz_spent = 0
     vale_sold = 0
 
+    vale_orders = []
+
     while True:
         message = exchange.read_message()
         
@@ -205,6 +207,7 @@ def main():
                 last_vale_ask = best_price('sell')
                 last_vale_ask_quantity = message['sell'][0][1] if message['sell'] else 0
 
+            '''
             if last_valbz_ask is not None and last_vale_buy is not None:
                 price_diff = last_vale_buy - last_valbz_ask
                 transact = True
@@ -247,9 +250,8 @@ def main():
                     vale_sold += last_vale_buy * last_vale_buy_quantity
 
                     print(f"Bought VALBZ at {last_valbz_ask} for {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} for {last_vale_buy_quantity}")
-
-
             '''
+
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
@@ -315,7 +317,8 @@ def main():
                             vale_limit += last_valbz_ask_quantity
                             vale_orders.append(order_id)
                             print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-                        '''
+
+
         # with open("data.txt", "a") as file:
             # file.write(str(data) + "\n")
 
