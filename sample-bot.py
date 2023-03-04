@@ -77,6 +77,8 @@ def main():
     last_vale_buy, last_vale_ask = None, None
     last_vale_buy_quantity, last_vale_ask_quantity = 0, 0
     valbz_limit = 0
+    vale_limit = 0
+    vale_orders = []
     while True:
         message = exchange.read_message()
 
@@ -96,11 +98,11 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
-
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
-            
+
+            '''
             def add_data():
                 bid_price = best_price("buy")
                 ask_price = best_price("sell")
@@ -168,8 +170,7 @@ def main():
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
-
-
+            '''
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
                 best_bond_buy = best_price('buy')
@@ -223,7 +224,24 @@ def main():
                         exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
                         valbz_limit += curr_valbz_ask_quantity
                         order_id += 1
-                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
+
+                        if vale_limit + last_vale_buy_quantity > 10:
+                            curr_vale_buy_quantity = last_vale_buy_quantity - (10 - vale_limit)
+                            for order_id in vale_orders:
+                                exchange.send_cancel_message(order_id=order_id)
+                                vale_orders = []
+                            order_id += 1
+                            exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=10)
+                            vale_orders.append(order_id)
+                            vale_limit = 10
+                            print(f"Resold all VALE")
+                        else:
+                            curr_vale_buy_quantity = last_vale_buy_quantity
+
+                        order_id += 1
+                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=curr_vale_buy_quantity)
+                        vale_limit += last_vale_buy_quantity
+                        vale_orders.append(order_id)
                         print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
                     else:
                         order_id += 1
@@ -233,8 +251,6 @@ def main():
                         order_id += 1
                         exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
                         print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-
-    
 
                 
 
