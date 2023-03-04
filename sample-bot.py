@@ -262,12 +262,13 @@ def main():
                             for order_id in vale_orders:
                                 exchange.send_cancel_message(order_id=order_id)
                                 print(f"Cancel order {order_id}")
-                                vale_orders = []
+
+                            vale_orders = []
                             order_id += 1
                             exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=10)
                             vale_orders.append(order_id)
                             vale_limit = 10
-                            print(f"Resold all VALE")
+                            print(f"Resold VALE orders")
                         else:
                             exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY,
                                                       price=last_valbz_ask, size=curr_valbz_ask_quantity)
