@@ -118,6 +118,25 @@ def main():
 
 
 
+
+                # ------------------------------------------
+                # df previous 50 orders
+                # grab all the available records
+            def moving_average(side, stock_name):
+                time_period = 50
+                sum = 0
+                counter = 0
+                if (message["type"] == "trade" and message["symbol"] == stock_name):
+                    sum += message["price"]
+                    counter += 1
+                    if (counter == time_period):
+                        return sum/time_period
+
+
+
+
+
+
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
