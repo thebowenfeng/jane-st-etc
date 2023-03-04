@@ -257,6 +257,7 @@ def main():
 
         with open("data.txt", "a") as file:
             file.write(str(data) + "\n")
+            print("written to disk")
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
