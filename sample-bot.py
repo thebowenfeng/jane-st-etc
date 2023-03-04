@@ -116,7 +116,7 @@ def main():
             elif message["symbol"] == "VALBZ":
                 last_valbz_ask = best_price('sell')
                 last_valbz_quantity = message['sell'][0][1]
-                print(message['sell'])
+                print(message['sell'][0])
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
                 last_vale_quantity = message['buy'][0][1]
