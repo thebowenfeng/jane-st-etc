@@ -217,8 +217,7 @@ def main():
                     if profit > convert_profit:
                         order_id += 1
                         if valbz_limit + last_valbz_ask_quantity > 10:
-                            curr_valbz_ask_quantity = last_valbz_ask_quantity - (10 - valbz_limit)
-                            convert_vale_quantity = last_valbz_ask_quantity - curr_valbz_ask_quantity
+                            convert_vale_quantity = valbz_limit + last_valbz_ask_quantity - 10
                             order_id += 1
                             exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=convert_vale_quantity)
                             order_id += 1
@@ -226,13 +225,11 @@ def main():
                             print(f"Converted {convert_vale_quantity} VALBZ to {convert_vale_quantity} VALE and sold")
                         else:
                             curr_valbz_ask_quantity = last_valbz_ask_quantity
-
-                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
-                        valbz_limit += curr_valbz_ask_quantity
-                        print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. ")
+                            exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
+                            valbz_limit += curr_valbz_ask_quantity
+                            print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. ")
 
                         if vale_limit + last_vale_buy_quantity > 10:
-                            curr_vale_buy_quantity = last_vale_buy_quantity - (10 - vale_limit)
                             for order_id in vale_orders:
                                 exchange.send_cancel_message(order_id=order_id)
                                 vale_orders = []
