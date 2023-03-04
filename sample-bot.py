@@ -140,8 +140,10 @@ def main():
                         return sum/time_period
             '''
             def best_price(side):
-                    if message[side]:
-                        return message[side][0][0]
+                if message[side]:
+                    return message[side][0][0]
+                else:
+                    return 0
             
             def add_data():
                 bid_price = best_price("buy")
