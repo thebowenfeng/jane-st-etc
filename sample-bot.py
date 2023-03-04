@@ -83,6 +83,7 @@ def main():
     last_vale_buy_quantity, last_vale_ask_quantity = 0, 0
     valbz_limit = 0
     vale_limit = 0
+    bond_limit = 0
     vale_orders = []
     while True:
         message = exchange.read_message()
@@ -131,11 +132,6 @@ def main():
                     if (counter == time_period):
                         return sum/time_period
             '''
-
-
-
-
-
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
@@ -217,18 +213,21 @@ def main():
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
 
-                    if best_bond_ask is not None and best_bond_ask < 1000:
+                    if best_bond_ask is not None and best_bond_ask < 1000 and bond_limit < 100:
                         order_id += 1
                         print(f"BOND stock at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
                         exchange.send_add_message(order_id=order_id, symbol="BOND", dir=Dir.BUY, price=best_bond_ask, size=message['sell'][0][1])
+                        bond_limit += message['sell'][0][1]
                         print(f"Bought BOND at {best_bond_ask}. Quantity: {message['sell'][0][1]}")
 
-                    if best_bond_buy is not None and best_bond_buy >= 1000:
+                    if best_bond_buy is not None and best_bond_buy > 1000 and bond_limit > -100:
                         order_id += 1
                         print(f"Selling BOND stock at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
                         exchange.send_add_message(order_id=order_id, symbol="BOND", dir=Dir.SELL, price=best_bond_buy,
                                                   size=message['buy'][0][1])
+                        bond_limit -= message['buy'][0][1]
                         print(f"Sold BOND at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
+
             elif message["symbol"] == "VALBZ":
                 last_valbz_ask = best_price('sell')
                 last_valbz_ask_quantity = message['sell'][0][1] if message['sell'] else 0
