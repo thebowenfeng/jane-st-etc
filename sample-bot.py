@@ -114,7 +114,7 @@ def main():
                 else:
                     fee = 0
                 data[message["symbol"]].append([bid_price, ask_price, spread, fee])
-
+            '''
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
@@ -129,7 +129,7 @@ def main():
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
-
+            
             if message["symbol"] == "GS":
                 GS_ask = best_price("sell")
                 GS_buy = best_price('buy')
@@ -174,7 +174,7 @@ def main():
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
-
+            '''
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
@@ -204,7 +204,7 @@ def main():
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
                 last_vale_buy_quantity = message['buy'][0][1] if message['buy'] else 0
-
+            '''
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
@@ -233,14 +233,13 @@ def main():
                         print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
                     else:
                         order_id += 1
-                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, size=last_valbz_ask_quantity)
+                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_ask_quantity)
                         order_id += 1
                         exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=last_valbz_ask_quantity)
                         order_id += 1
                         exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
                         print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-
-    
+                    '''
 
                 
 
