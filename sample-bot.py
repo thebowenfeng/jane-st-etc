@@ -113,6 +113,7 @@ def main():
                         exchange.send_add_message(order_id=order_id, symbol="BOND", dir=Dir.SELL, price=best_bond_buy,
                                                   size=message['buy'][0][1])
                         print(f"Sold BOND at {best_bond_buy}. Quantity: {message['buy'][0][1]}")
+            '''
             elif message["symbol"] == "VALBZ":
                 last_valbz_ask = best_price('sell')
                 last_valbz_quantity = message['sell'][0][1]
@@ -130,7 +131,7 @@ def main():
                     order_id += 1
                     exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_quantity)
                     print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_quantity}. Sold VALE at {last_vale_buy} : {last_vale_quantity}")
-
+            '''
 
 
 
