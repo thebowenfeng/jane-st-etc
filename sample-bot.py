@@ -51,22 +51,14 @@ def main():
 
     # exchange.send_add_message(order_id=1, symbol="BOND", dir=Dir.BUY, price=990, size=1)
 
-    ''''
-    GS_ask = best_price("sell")
-    GS_buy = best_price('buy')
-    order_id += 1
-    print(f"GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
-    exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price= GS_ask, size=message['sell'][0][1])
-    print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
-    buy_data["GS"] = [GS_ask, message['sell'][0][1]]
-    '''
     # Set up some variables to track the bid and ask price of a symbol. Right
     # now this doesn't track much information, but it's enough to get a sense
     # of the VALE market.
 
     vale_bid_price, vale_ask_price = None, None
     bond_bid, bond_ask = None, None
-
+    first_gs = True
+    
     vale_last_print_time = time.time()
 
     # Here is the main loop of the program. It will continue to read and
@@ -91,7 +83,7 @@ def main():
     vale_orders = []
     while True:
         message = exchange.read_message()
-
+        
         # Some of the message types below happen infrequently and contain
         # important information to help you understand what your bot is doing,
         # so they are printed in full. We recommend not always printing every
@@ -148,6 +140,16 @@ def main():
 
                 if now > vale_last_print_time + 1:
                     vale_last_print_time = now
+                    if first_gs:
+                        if GS_ask is not None and GS_ask < buy_data["GS"][0]:
+                            GS_ask = best_price("sell")
+                            GS_buy = best_price('buy')
+                            order_id += 1
+                            print(f"GS stock at {GS_buy}. Quantity: {message['buy'][0][1]}")
+                            exchange.send_add_message(order_id=order_id, symbol="GS", dir=Dir.BUY, price= GS_ask, size=message['sell'][0][1])
+                            print(f"Bought GS at {GS_ask}. Quantity: {message['sell'][0][1]}")
+                            buy_data["GS"] = [GS_ask, message['sell'][0][1]]
+                            first_gs = False
                     if GS_ask is not None and GS_ask < buy_data["GS"][0]:
                         order_id += 1
                         print(f"GS stock at {GS_ask}. Quantity: {message['sell'][0][1]}")
