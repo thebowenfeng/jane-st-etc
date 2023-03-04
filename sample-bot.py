@@ -116,7 +116,7 @@ def main():
                 else:
                     fee = 0
                 data[message["symbol"]].append([bid_price, ask_price, spread, fee])
-            '''
+
             add_data()
             ### TESTING TO REMOVE
             print(data["GS"])
@@ -176,7 +176,6 @@ def main():
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
-            '''
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
