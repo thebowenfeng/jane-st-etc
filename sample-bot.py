@@ -77,14 +77,23 @@ def main():
     # cause a feedback loop where your bot's messages will quickly be
     # rate-limited and ignored. Please, don't do that!
     order_id = 0
-    last_valbz_ask, last_valbz_buy = None, None
-    last_valbz_ask_quantity, last_valbz_buy_quantity = 0, 0
-    last_vale_buy, last_vale_ask = None, None
-    last_vale_buy_quantity, last_vale_ask_quantity = 0, 0
+    bond_limit = 0
     valbz_limit = 0
     vale_limit = 0
-    bond_limit = 0
-    vale_orders = []
+
+    last_valbz_ask = None
+    last_valbz_ask_quantity = None
+    last_vale_buy = None
+    last_vale_buy_quantity = None
+
+    last_valbz_buy = None
+    last_valbz_buy_quantity = None
+    last_vale_ask = None
+    last_vale_ask_quantity = None
+
+    valbz_spent = 0
+    vale_sold = 0
+
     while True:
         message = exchange.read_message()
         
@@ -186,10 +195,59 @@ def main():
             elif message["symbol"] == "VALBZ":
                 last_valbz_ask = best_price('sell')
                 last_valbz_ask_quantity = message['sell'][0][1] if message['sell'] else 0
+                last_valbz_buy = best_price('buy')
+                last_valbz_buy_quantity = message['buy'][0][1] if message['buy'] else 0
             elif message["symbol"] == "VALE":
                 last_vale_buy = best_price('buy')
                 last_vale_buy_quantity = message['buy'][0][1] if message['buy'] else 0
+                last_vale_ask = best_price('sell')
+                last_vale_ask_quantity = message['sell'][0][1] if message['sell'] else 0
 
+            if last_valbz_ask is not None and last_vale_buy is not None:
+                price_diff = last_vale_buy - last_valbz_ask
+                transact = True
+                if valbz_limit + last_valbz_ask_quantity > 9:
+                    transact = False
+                    order_id += 1
+
+                    if last_valbz_buy_quantity > 9:
+                        curr_valbz_sell = 9
+                    else:
+                        curr_valbz_sell = last_valbz_buy_quantity
+
+                    if last_valbz_buy * curr_valbz_sell > valbz_spent + 10:
+                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.SELL, price=last_valbz_buy, size=curr_valbz_sell)
+                        valbz_limit -= last_valbz_buy_quantity
+                        valbz_spent = 0
+
+                if vale_limit - last_vale_buy_quantity < -9:
+                    transact = False
+                    order_id += 1
+
+                    if last_vale_ask_quantity > 9:
+                        curr_vale_buy = 9
+                    else:
+                        curr_vale_buy = last_vale_ask_quantity
+
+                    if vale_sold > last_vale_ask * curr_vale_buy + 10:
+                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, price=last_vale_ask, size=curr_vale_buy)
+                        vale_limit += last_vale_ask_quantity
+                        vale_sold = 0
+
+                if price_diff > 0 and transact and last_valbz_ask_quantity < 10 and last_vale_buy_quantity < 10:
+                    order_id += 1
+                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_ask_quantity)
+                    valbz_limit += last_valbz_ask_quantity
+                    valbz_spent += last_valbz_ask * last_valbz_ask_quantity
+                    order_id += 1
+                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
+                    vale_limit -= last_vale_buy_quantity
+                    vale_sold += last_vale_buy * last_vale_buy_quantity
+
+                    print(f"Bought VALBZ at {last_valbz_ask} for {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} for {last_vale_buy_quantity}")
+
+
+            '''
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
@@ -255,7 +313,7 @@ def main():
                             vale_limit += last_valbz_ask_quantity
                             vale_orders.append(order_id)
                             print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-
+                        '''
         # with open("data.txt", "a") as file:
             # file.write(str(data) + "\n")
 
