@@ -148,8 +148,6 @@ def main():
                 data[message["symbol"]].append([bid_price, ask_price, spread, fee])
 
             add_data()
-            ### TESTING TO REMOVE
-            print(data["GS"])
 
             if message["symbol"] == "VALE":
                 fee = 10
@@ -159,8 +157,6 @@ def main():
                 fee = 0
 
             add_data()
-            ### TESTING TO REMOVE
-            print(data["GS"])
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
@@ -259,8 +255,8 @@ def main():
                             vale_orders.append(order_id)
                             print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
 
-    with open("data.txt", "a") as file:
-        file.write(str(data) + "\n")
+        with open("data.txt", "a") as file:
+            file.write(str(data) + "\n")
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
