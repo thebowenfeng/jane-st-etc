@@ -240,6 +240,7 @@ def main():
                             exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=10)
                             vale_orders.append(order_id)
                             vale_limit = 10
+                            print(f"Resold all VALE")
                         else:
                             curr_vale_buy_quantity = last_vale_buy_quantity
 
