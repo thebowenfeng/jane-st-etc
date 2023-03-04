@@ -105,14 +105,6 @@ def main():
             ### TESTING TO REMOVE
             print(data["BOND"])
 
-            if message["symbol"] == "BOND":
-                bond_bid_price = best_price("buy")
-                bond_ask_price = best_price("sell")
-                bond_spread = bond_bid_price - bond_ask_price
-                fee = 0
-                time_data = [bond_bid_price, bond_ask_price, bond_spread, fee]
-                data["BOND"].append(time_data)
-
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 vale_ask_price = best_price("sell")
