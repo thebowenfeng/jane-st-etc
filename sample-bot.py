@@ -32,6 +32,7 @@ def main():
 
     exchange = ExchangeConnection(args=args)
 
+    # Data will be structured as [bid, ask, spread, fee]
     data = {"BOND" : [], "VALBZ": [], "VALE" : [], "GS" : [], "MS": [], "WFC": [], "XLF" : []}
 
     # Store and print the "hello" message received from the exchange. This
@@ -86,6 +87,23 @@ def main():
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
+            
+            def add_data():
+                bid_price = best_price("buy")
+                ask_price = best_price("sell")
+                spread = bid_price - ask_price
+
+                if message["symbol"] == "VALE":
+                    fee = 10
+                if message["symbol"] == "XLF":
+                    fee = 100
+                else:
+                    fee = 0
+                data[message["symbol"]].append([bid_price, ask_price, spread, fee])
+
+            add_data()
+            ### TESTING TO REMOVE
+            print(data["BOND"])
 
             if message["symbol"] == "BOND":
                 bond_bid_price = best_price("buy")
@@ -96,9 +114,6 @@ def main():
                 data["BOND"].append(time_data)
 
             if message["symbol"] == "VALE":
-
-                
-
                 vale_bid_price = best_price("buy")
                 vale_ask_price = best_price("sell")
 
@@ -112,7 +127,8 @@ def main():
                             "vale_ask_price": vale_ask_price,
                         }
                     )
-            if message["symbol"] == "VALBZ":
+
+    
 
                 
 
