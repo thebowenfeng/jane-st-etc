@@ -110,7 +110,7 @@ def main():
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
-
+            '''
             def add_data():
                 bid_price = best_price("buy")
                 ask_price = best_price("sell")
@@ -168,7 +168,7 @@ def main():
             if message["symbol"] == "VALE":
                 vale_bid_price = best_price("buy")
                 GS_ask_price = best_price("sell")
-
+            '''
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
                 best_bond_buy = best_price('buy')
