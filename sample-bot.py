@@ -252,6 +252,7 @@ def main():
                     print(f"Bought VALBZ at {last_valbz_ask} for {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} for {last_vale_buy_quantity}")
             '''
 
+            '''
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
                 price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
@@ -317,8 +318,7 @@ def main():
                             vale_limit += last_valbz_ask_quantity
                             vale_orders.append(order_id)
                             print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
-
-
+                '''
         # with open("data.txt", "a") as file:
             # file.write(str(data) + "\n")
 
