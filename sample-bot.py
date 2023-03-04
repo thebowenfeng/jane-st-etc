@@ -140,6 +140,7 @@ def main():
                         curr_valbz_ask_quantity = last_valbz_ask_quantity
 
                     exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
+                    valbz_limit += curr_valbz_ask_quantity
                     order_id += 1
                     exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
                     print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
