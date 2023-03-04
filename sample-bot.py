@@ -121,8 +121,10 @@ def main():
                 last_vale_quantity = message['buy'][0][1] if message['buy'] else 0
 
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
-                profit = last_vale_buy * last_vale_quantity - last_valbz_ask * last_valbz_quantity
-                if profit > 10:
+                buy_amount = last_valbz_ask * last_valbz_quantity
+                sell_amount = last_vale_buy * last_vale_quantity
+                profit = sell_amount - buy_amount
+                if profit > 10 and buy_amount < 20000:
                     order_id += 1
                     print(f"VALBZ at {last_valbz_ask}, VALE at {last_vale_buy}.")
                     exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=last_valbz_quantity)
