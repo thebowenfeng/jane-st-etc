@@ -38,7 +38,7 @@ def main():
     buy_data = {"GS": [], "VALBZ": [], "VALE": [], "GS": [], "MS": [], "WFC": [], "XLF": []}
 
     # access fair_value if exist by fair_values_appro["stock_name"]
-    fair_values_appro = {"BOND": [], "GS": [], "MS": [], "WFC": [], "ETF": []}
+    fair_values_appro = {"BOND": None, "GS": None, "MS": None, "WFC": None, "ETF": None}
 
     # Store and print the "hello" message received from the exchange. This
     # contains useful information about your positions. Normally you start with
@@ -129,7 +129,7 @@ def main():
 
         elif message["type"] == "book":
             # fair price approximation
-            if(message["sell"][0][0] and message["buy"][0][0]):
+            if(len(message["sell"]) > 0 and len(message["buy"]) > 0):
                 fair_values_appro[message["symbol"]] = (message["sell"][0][0] + message["buy"][0][0]) / 2
 
 
