@@ -103,7 +103,7 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
-
+            '''
 
             def fair_value(stock_name):
                 if (message["type"] == "book" and message["symbol"] == stock_name):
@@ -131,7 +131,7 @@ def main():
                     counter += 1
                     if (counter == time_period):
                         return sum/time_period
-
+            '''
 
 
 
