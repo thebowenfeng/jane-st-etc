@@ -103,7 +103,7 @@ def main():
         elif message["type"] == "fill":
             print(message)
         elif message["type"] == "book":
-
+            '''
             def fair_value(stock_name):
                 if (message["type"] == "book" and message["symbol"] == stock_name):
                    return (message["sell"][0][0] + message["buy"][0][0]) / 2
@@ -115,7 +115,7 @@ def main():
             WFC_fair_val = fair_value("WFC")
             ETF_fair_val = 0.3 * BOND_fair_val + 0.2 * GS_fair_val + 0.3 * MS_fair_val + 0.2 * WFC_fair_val
             print(ETF_fair_val)
-
+            '''
             '''
 
                 # ------------------------------------------
