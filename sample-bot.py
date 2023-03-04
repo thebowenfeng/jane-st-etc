@@ -133,7 +133,7 @@ def main():
             def best_price(side):
                     if message[side]:
                         return message[side][0][0]
-            
+
             def add_data():
                 bid_price = best_price("buy")
                 ask_price = best_price("sell")
@@ -156,7 +156,7 @@ def main():
             else:
                 fee = 0
 
-            add_data()
+            # add_data()
 
             if message["symbol"] == "BOND":
                 best_bond_ask = best_price("sell")
@@ -257,7 +257,6 @@ def main():
 
         with open("data.txt", "a") as file:
             file.write(str(data) + "\n")
-            print("written to disk")
 
 
 # ~~~~~============== PROVIDED CODE ==============~~~~~
