@@ -122,28 +122,38 @@ def main():
                 last_vale_buy_quantity = message['buy'][0][1] if message['buy'] else 0
 
             if last_valbz_ask is not None and last_vale_buy is not None and last_valbz_ask < last_vale_buy:
+                price_diff = last_vale_buy - last_valbz_ask
                 buy_amount = last_valbz_ask * last_valbz_ask_quantity
                 sell_amount = last_vale_buy * last_vale_buy_quantity
                 profit = sell_amount - buy_amount
+                convert_profit = price_diff * last_valbz_ask_quantity - 10
                 if buy_amount < 20000:
-                    order_id += 1
                     print(f"VALBZ at {last_valbz_ask}, VALE at {last_vale_buy}.")
-                    if valbz_limit + last_valbz_ask_quantity > 10:
-                        curr_valbz_ask_quantity = last_valbz_ask_quantity - (10 - valbz_limit)
-                        convert_vale_quantity = last_valbz_ask_quantity - curr_valbz_ask_quantity
+                    if profit > convert_profit:
                         order_id += 1
-                        exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=convert_vale_quantity)
-                        order_id += 1
-                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=convert_vale_quantity)
-                        print(f"Converted {convert_vale_quantity} VALBZ to {convert_vale_quantity} VALE and sold")
-                    else:
-                        curr_valbz_ask_quantity = last_valbz_ask_quantity
+                        if valbz_limit + last_valbz_ask_quantity > 10:
+                            curr_valbz_ask_quantity = last_valbz_ask_quantity - (10 - valbz_limit)
+                            convert_vale_quantity = last_valbz_ask_quantity - curr_valbz_ask_quantity
+                            order_id += 1
+                            exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=convert_vale_quantity)
+                            order_id += 1
+                            exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=convert_vale_quantity)
+                            print(f"Converted {convert_vale_quantity} VALBZ to {convert_vale_quantity} VALE and sold")
+                        else:
+                            curr_valbz_ask_quantity = last_valbz_ask_quantity
 
-                    exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
-                    valbz_limit += curr_valbz_ask_quantity
-                    order_id += 1
-                    exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
-                    print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
+                        exchange.send_add_message(order_id=order_id, symbol="VALBZ", dir=Dir.BUY, price=last_valbz_ask, size=curr_valbz_ask_quantity)
+                        valbz_limit += curr_valbz_ask_quantity
+                        order_id += 1
+                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_vale_buy_quantity)
+                        print(f"Bought VALBZ at {last_valbz_ask} : {last_valbz_ask_quantity}. Sold VALE at {last_vale_buy} : {last_vale_buy_quantity}")
+                    else:
+                        order_id += 1
+                        exchange.send_convert_message(order_id=order_id, symbol="VALE", dir=Dir.BUY, size=last_valbz_ask_quantity)
+                        order_id += 1
+                        exchange.send_add_message(order_id=order_id, symbol="VALE", dir=Dir.SELL, price=last_vale_buy, size=last_valbz_ask_quantity)
+                        print(f"Converted {last_valbz_ask_quantity} VALBZ to {last_valbz_ask_quantity} VALE and sold")
+
 
 
 
